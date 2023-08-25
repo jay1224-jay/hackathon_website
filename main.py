@@ -1,7 +1,16 @@
 import streamlit as st
 import ui
+from chatroom import chatroom, chatData
 
 
-ui.generate_ui(st)
 
-st.write("ui.py work successfully")
+
+ui.generate_sidebar(st)
+
+
+# st.write("start chatting")
+
+
+
+# ui.generate_room(st, chatData[0])
+    
