@@ -1,11 +1,11 @@
 # Hackathon website for project display
 
 *Screenshot*
-[screenshot]()
+[screenshot](https://github.com/jay1224-jay/hackathon_website/blob/master/pictures/demo-2023-08-25.png)
 
 ## Demo App
 
-![Streamlit App](https://law-thon-project-test.streamlit.app/)
+![Demo](https://law-thon-project-test.streamlit.app/)
 
 
 
