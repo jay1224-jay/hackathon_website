@@ -3,6 +3,7 @@ import ui
 from chatroom import chatroom, chatData
 
 
+
 st.set_page_config(
     page_title="LawChat.tw",
     # page_icon="",
@@ -12,7 +13,6 @@ st.set_page_config(
         'Report a bug': "https://www.extremelycoolapp.com/bug",
     }
 )
-
 
 ui.generate_sidebar(st)
 

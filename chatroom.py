@@ -25,23 +25,23 @@ chat1 = {
     },
     "chat_history": [
         {
-            "sender": "AI",
+            "sender": "Bob",
             "text": "嗨",
         },
         {
-            "sender": "Bob",
+            "sender": "AI",
             "text": "你好，這是Bing。",
         },
         {
-            "sender": "AI",
+            "sender": "Bob",
             "text": "今天天氣如何？",
         },
         {
-            "sender": "Bob",
+            "sender": "AI",
             "text": "我不確定，但我可以幫你查詢。",
         },
         {
-            "sender": "AI",
+            "sender": "Bob",
             "text": "謝謝",
         }
     ],
@@ -69,23 +69,27 @@ chat2 = {
     },
     "chat_history": [
         {
-            "sender": "AI",
+            "sender": "Jay",
             "text": "hola",
         },
         {
-            "sender": "Bob",
+            "sender": "AI",
             "text": "hola amigo",
         },
         {
             "sender": "AI",
+            "text": "Do u have any problems??",
+        },
+        {
+            "sender": "Jay",
             "text": "how's ur day, bro??",
         },
         {
-            "sender": "Bob",
+            "sender": "AI",
             "text": "shit",
         },
         {
-            "sender": "AI",
+            "sender": "Jay",
             "text": "so do I",
         }
     ],

@@ -1,14 +1,17 @@
 import streamlit as st
 from chatroom import chatroom, chatData
 import time
+from streamlit_chat import message
 
 chatrooms = chatData
 
 chatrooms_btns = []
 
-
-
-
+def but(root, btn):
+    for b, r in zip(btn, chatrooms):
+        if b:
+            print(r)
+            generate_chatroom(root, r)
 def generate_sidebar(root):
 
     create_new_chat_btn = root.sidebar.button("Create A New Chat", type="primary")
@@ -22,6 +25,7 @@ def generate_sidebar(root):
             generate_room(root, room)
         # root.sidebar.button(button_title)
 
+    but(root, chatrooms_btns)
 
 def get_date(date):
     # date is dict
@@ -29,45 +33,84 @@ def get_date(date):
 
     return "{}-{}-{} {}:{}".format(date_number[0],date_number[1],date_number[2],date_number[3],date_number[4])
 
-# @st.cache_data
-def generate_room(root, room):
 
-    chat_col, doc_col = root.columns([0.6, 0.4], gap="large")
+
+# @st.cache_resource # (experimental_allow_widgets=True)
+def generate_room(root, room):
+    chat_col, doc_col = root.columns([0.6, 0.4])
+
     # ===== chat room =====
 
     chat_col.title( get_date(room["date"]) )
     
     chat_history = room["chat_history"]
 
-    left, center, right = chat_col.columns([1, 2, 1])
 
-    turn = 0 # 0: AI, 1: Human
-    buffer_space = 0 # how many lines to print
-    for message in chat_history:
-        
-        if message["sender"] == "AI" :
-            if turn == 1:
-                for i in range(buffer_space):
-                    left.write("")
-                    left.write("")
-            else:
-                buffer_space += 1
-            turn = 0
-            left.write(message["text"])
-        else:
-            if turn == 0:
-                for i in range(buffer_space):
-                    right.write("")
-                    right.write("")
-            else:
-                buffer_space += 1
-            turn = 1
-            right.write(message["text"])
 
-        #  
-        #  with chat_col.container():
-        #      st.write("Sender: " + message["sender"])
-        #      st.write("Text:   " + message["text"])
+    # using streamlit official API
+    # 
+    # chat_col.markdown(
+    #     """
+    #     <style>
+    #         [aria-label=\"Chat message from user\"]{
+    #             text-align: right;
+    #         }
+    #     </style>
+    #     """,
+    #     unsafe_allow_html=True,
+    # )
+    # for message in chat_history:
+    #     if message["sender"] == "AI":
+    #         with chat_col.chat_message("ai"):
+    #             st.write(message["text"])
+    #     else:
+    #         with chat_col.chat_message("user"):
+    #             st.write(message["text"])
+   
+    
+
+    ai_logo = "https://t3.ftcdn.net/jpg/03/22/38/32/360_F_322383277_xcXz1I9vOFtdk7plhsRQyjODj08iNSwB.jpg"
+    user_logo = "https://scontent-tpe1-1.xx.fbcdn.net/v/t39.30808-1/347419759_987667648912432_848655211680491487_n.jpg?stp=dst-jpg_p320x320&_nc_cat=110&ccb=1-7&_nc_sid=7206a8&_nc_ohc=dW-t7kVd4T4AX-Yh_Jp&_nc_ht=scontent-tpe1-1.xx&oh=00_AfDPpcAGXX7ropNFZzUPs1iOjEbrWi2u1VIwS-utY6xf1w&oe=64ECF617"
+    with chat_col:
+        for msg in chat_history:
+            if msg["sender"] == "AI":
+                message(msg["text"], logo=ai_logo, key=msg["text"])
+            else:
+                message(msg["text"], is_user=True, logo=user_logo, key=msg["text"]) # align to right
+
+    generate_input(chat_col)
+    # st.text_area("", "Type:", key="chat_input")
+
+    # left, center, right = chat_col.columns([1, 2, 1])
+    # # display chat message
+    # turn = -1 # 0: AI, 1: Human
+    # buffer_space = 1 # how many lines to print
+    # for message in chat_history:
+    #     
+    #     if message["sender"] == "AI" :
+    #         if turn == 1:
+    #             for i in range(buffer_space):
+    #                 left.write("")
+    #                 left.write("")
+    #             buffer_space = 1
+    #         elif turn == -1:
+    #             pass
+    #         else:
+    #             buffer_space += 1
+    #         turn = 0
+    #         left.write(message["text"])
+    #     else:
+    #         if turn == 0:
+    #             for i in range(buffer_space):
+    #                 right.write("")
+    #                 right.write("")
+    #             buffer_space = 1
+    #         elif turn == -1:
+    #             pass
+    #         else:
+    #             buffer_space += 1
+    #         turn = 1
+    #         right.write(message["text"])
 
     # ===== chat room =====
 
@@ -82,3 +125,6 @@ def generate_room(root, room):
 
     # ===== doc room =====
 
+def generate_input(root):
+
+    root.text_input("label:", key="chat_input")
