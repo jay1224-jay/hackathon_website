@@ -39,20 +39,46 @@ def generate_room(root, room):
     
     chat_history = room["chat_history"]
 
+    left, center, right = chat_col.columns([1, 2, 1])
+
+    turn = 0 # 0: AI, 1: Human
+    buffer_space = 0 # how many lines to print
     for message in chat_history:
-        with chat_col.container():
-            root.write("Sender: " + message["sender"])
-            root.write("Text:   " + message["text"])
+        
+        if message["sender"] == "AI" :
+            if turn == 1:
+                for i in range(buffer_space):
+                    left.write("")
+                    left.write("")
+            else:
+                buffer_space += 1
+            turn = 0
+            left.write(message["text"])
+        else:
+            if turn == 0:
+                for i in range(buffer_space):
+                    right.write("")
+                    right.write("")
+            else:
+                buffer_space += 1
+            turn = 1
+            right.write(message["text"])
+
+        #  
+        #  with chat_col.container():
+        #      st.write("Sender: " + message["sender"])
+        #      st.write("Text:   " + message["text"])
 
     # ===== chat room =====
 
     # ===== doc room =====
 
     doc_col.title("Document: ")
-    
-    with doc_col.expander("Docs"):
+
+    with doc_col.expander("Doc"):
         for doc in room["docs"]:
             st.write(doc)
+        
 
     # ===== doc room =====
 
