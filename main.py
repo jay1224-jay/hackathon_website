@@ -22,4 +22,3 @@ ui.generate_sidebar(st)
 
 
 # ui.generate_room(st, chatData[0])
-    
