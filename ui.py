@@ -1,17 +1,8 @@
-import streamlit as st
-from chatroom import chatroom, chatData
-import time
-from streamlit_chat import message
 
 chatrooms = chatData
 
 chatrooms_btns = []
 
-def but(root, btn):
-    for b, r in zip(btn, chatrooms):
-        if b:
-            print(r)
-            generate_chatroom(root, r)
 def generate_sidebar(root):
 
     create_new_chat_btn = root.sidebar.button("Create A New Chat", type="primary")
@@ -25,7 +16,6 @@ def generate_sidebar(root):
             generate_room(root, room)
         # root.sidebar.button(button_title)
 
-    but(root, chatrooms_btns)
 
 def get_date(date):
     # date is dict
