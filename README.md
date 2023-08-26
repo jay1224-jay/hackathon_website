@@ -1,7 +1,7 @@
 # Hackathon website for project display
 
 *Screenshot*
-![](https://github.com/jay1224-jay/hackathon_website/blob/master/pictures/demo-2023-08-25.png)
+![](https://github.com/jay1224-jay/hackathon_website/blob/master/pictures/demo-ui.png)
 
 ## Demo App
 
