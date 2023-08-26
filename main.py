@@ -1,6 +1,7 @@
 import streamlit as st
 from chatroom import chatroom, chatData
 from streamlit_chat import message
+from streamlit.components.v1 import html # for embedding js
 
 import time
 chatrooms = chatData
@@ -25,34 +26,13 @@ def generate_room(root, room):
     chat_col.title( get_date(current_chatroom["date"]) )
     
     chat_history = current_chatroom["chat_history"]
-
-
-
-    # using streamlit official API
-    # 
-    # chat_col.markdown(
-    #     """
-    #     <style>
-    #         [aria-label=\"Chat message from user\"]{
-    #             text-align: right;
-    #         }
-    #     </style>
-    #     """,
-    #     unsafe_allow_html=True,
-    # )
-    # for message in chat_history:
-    #     if message["sender"] == "AI":
-    #         with chat_col.chat_message("ai"):
-    #             st.write(message["text"])
-    #     else:
-    #         with chat_col.chat_message("user"):
-    #             st.write(message["text"])
-   
+    
+    chat_box = chat_col.expander("chat", True) # 2nd parameter should be True if you want the expander to be in "expanded" initially
     
 
     ai_logo = "https://t3.ftcdn.net/jpg/03/22/38/32/360_F_322383277_xcXz1I9vOFtdk7plhsRQyjODj08iNSwB.jpg"
     user_logo = "https://scontent-tpe1-1.xx.fbcdn.net/v/t39.30808-1/347419759_987667648912432_848655211680491487_n.jpg?stp=dst-jpg_p320x320&_nc_cat=110&ccb=1-7&_nc_sid=7206a8&_nc_ohc=dW-t7kVd4T4AX-Yh_Jp&_nc_ht=scontent-tpe1-1.xx&oh=00_AfDPpcAGXX7ropNFZzUPs1iOjEbrWi2u1VIwS-utY6xf1w&oe=64ECF617"
-    with chat_col:
+    with chat_box:
         for msg in chat_history:
             if msg["sender"] == "AI":
                 message(msg["text"], logo=ai_logo, key=msg["text"])
@@ -60,7 +40,7 @@ def generate_room(root, room):
                 message(msg["text"], is_user=True, logo=user_logo, key=msg["text"]) # align to right
 
     # generate_input(chat_col)
-    chat_col.text_area("", "Type:", key="chat_input")
+    chat_col.text_area("type here",key="chat_input")
 
     # left, center, right = chat_col.columns([1, 2, 1])
     # # display chat message
@@ -116,6 +96,20 @@ st.set_page_config(
     }
 )
 
+# write CSS to website
+st.markdown(
+"""
+
+<style>
+    .streamlit-expanderContent {
+        overflow: scroll;
+        height: 550px;
+    }
+</style>
+
+"""
+, unsafe_allow_html=True)
+
 
 create_new_chat_btn = st.sidebar.button("Create A New Chat", type="primary")
 
@@ -129,3 +123,4 @@ for room in chatrooms:
 
 generate_room(st, current_chatroom)
 
+print("chat input: " + st.session_state["chat_input"])
