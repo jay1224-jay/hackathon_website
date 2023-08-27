@@ -5,6 +5,7 @@ from streamlit_chat import message
 from streamlit.components.v1 import html # for embedding js
 
 import time
+from datetime import datetime
 
 st.set_page_config(
     page_title="LawChat.tw",
@@ -43,18 +44,34 @@ def get_date(date):
 
 def add_new_message(sender, message):
     
+    ai_name = ["ai", "AI"]
+
     mm = {"sender": sender, "text" : message}
     ss.current_chatroom = ss.current_chatroom.send_msg(sender, message)
     ss.current_messages = ss.current_chatroom.chat_history
     ss.chat_input = ""
 
-    # generate_room(st, st.session_state.current_chatroom)
+    if sender not in ai_name:
+        add_new_message("AI", get_ai_response(message))
+
+
     
+def ai_model(prompt):
+    # where the LawBERT.tw model should be
+
+    # return answer
+    if prompt == "":
+        return "Bro, u serious??"
+    return prompt[::-1]
+
+def get_ai_response(prompt):
+
+    return ai_model(prompt)
+
 
 
 # @st.cache_resource(experimental_allow_widgets=True)
 
-# ss.current_chatroom = room
 
 chat_col, doc_col = st.columns([0.6, 0.4])
 
@@ -84,12 +101,6 @@ with chat_box:
 
 chat_col.text_area("type here", key="chat_input")
 submit_btn = st.button("Submit", key="submit_btn", on_click=add_new_message, args=("Bob", ss['chat_input']))
-# if submit_btn:
-#     # print("text: ", st.session_state["chat_input"])
-#     # add_new_message(ss.current_chatroom, "user", ss["chat_input"])
-#     ss.current_messages.append({"sender": "user", "text": ss['chat_input']})
-#     ss.current_messages = ss.current_messages
-
 
 
 # ===== chat room =====
@@ -125,8 +136,30 @@ def change_room(room):
     ss.current_chatroom = room
     ss.current_messages = room.chat_history
 
+def create_new_chat():
 
-create_new_chat_btn = st.sidebar.button("Create A New Chat", type="primary")
+    tmp = datetime.now()
+
+    date_dict = dict()
+    date_dict["year"] = tmp.year
+    date_dict["month"] = tmp.month
+    date_dict["day"] = tmp.day
+    date_dict["hour"] = tmp.hour
+    date_dict["minute"] = tmp.minute
+    date_dict["second"] = tmp.second
+    
+    chat_history_list = []
+
+    docs_list = []
+
+    room = chatroom(date_dict, chat_history_list, docs_list)
+
+    chatrooms.insert(0, room)
+    
+    change_room(room)
+
+
+create_new_chat_btn = st.sidebar.button("Create A New Chat", type="primary", on_click=create_new_chat)
 
 st.sidebar.write("History chats")
 for room in chatrooms:
@@ -139,8 +172,11 @@ for room in chatrooms:
 # generate_room(st, ss.current_chatroom, ss.current_messages)
 
 # st.write(ss)
-st.write(ss["current_chatroom"])
 # st.write(ss["current_chatroom"])
-for msg in ss.current_messages:
-    st.write(msg["sender"])
-    st.write(msg["text"])
+# st.write(ss["current_chatroom"])
+# for msg in ss.current_messages:
+#     st.write(msg["sender"])
+#     st.write(msg["text"])
+
+
+print(datetime.now())
