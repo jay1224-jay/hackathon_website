@@ -1,4 +1,24 @@
 
+# standard chatroom class
+#
+# essential attributes:
+#   1. date
+#   2. chat_history
+#   3. docs
+#
+# essential methods
+#   1. send_msg(sender, text)
+#
+# only one way to get attributes' value     '
+#   1. chatroom.<attributes> # how main.py get the value
+# 
+# if you want to get value using dict{} ( maybe your original data uses dict{} )
+#   chatroom["chat_history"]
+# 
+# please do not use chatroom and remember to replace ".<attribute>" with "['<attritube>']"
+#   chatroom.date -> chatroom["date"]
+ 
+
 
 class chatroom:
 

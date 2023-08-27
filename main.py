@@ -1,10 +1,10 @@
 import streamlit as st
 from streamlit import session_state as ss
-from chatroom import chatroom, chatData
 from streamlit_chat import message
 from streamlit.components.v1 import html # for embedding js
 
-import time
+from chat_data import chatroom, chatData # import the chat data, see chatroom.py for further information
+
 from datetime import datetime
 
 st.set_page_config(
@@ -17,14 +17,11 @@ st.set_page_config(
     }
 )
 
-chatrooms = chatData
+chatrooms = chatData  # where all chat data stores
 
-chatrooms_btns = []
 if "current_chatroom" not in ss:
     ss["current_chatroom"] = chatrooms[0]
-
 ss["current_messages"] = ss.current_chatroom.chat_history
-
 ss["scrollbarDownVar"] = 0  # tell the scrollbar when to scroll to the bottom
 
 
@@ -49,85 +46,19 @@ def add_new_message(sender, message):
     ss["scrollbarDownVar"] += 1
     
 def ai_model(prompt):
-    # where the LawBERT.tw model should be
+    # where the LawChat.tw model should be
 
+    # example:
+    # 
+    # answer = my_model(prompt)
     # return answer
-    if prompt == "":
-        return "Bro, u serious??"
-    elif prompt == "存證信函是什麼？":
-        return "1.存證信函是指藉由郵局證明信件內容及發信日期、收信日期的信件 文書.\n2.存證信函僅能證明發信人在信中表達了一定的意思表示，而且收信者確 實收到了信件.\n3.存證信函並不能夠代表發信者確實擁有信中敘述的權利，也不能夠代表 收信者即負有信中所敘述或要求的義務。"
-    return prompt[::-1]
+
+    return prompt[::-1] # fake model ??
 
 def get_ai_response(prompt):
+    # call model to get response
 
     return ai_model(prompt)
-
-
-
-# @st.cache_resource(experimental_allow_widgets=True)
-
-
-chat_col, doc_col = st.columns([0.6, 0.4])
-
-# ===== chat room =====
-
-chat_col.title( get_date(ss.current_chatroom.date) )
-
-# chat_history = room.chat_history
-
-chat_box = chat_col.expander("chat", True) # 2nd parameter should be True if you want the expander to be in "expanded" initially
-
-
-ai_logo = "https://t3.ftcdn.net/jpg/03/22/38/32/360_F_322383277_xcXz1I9vOFtdk7plhsRQyjODj08iNSwB.jpg"
-user_logo = "https://scontent-tpe1-1.xx.fbcdn.net/v/t39.30808-1/347419759_987667648912432_848655211680491487_n.jpg?stp=dst-jpg_p320x320&_nc_cat=110&ccb=1-7&_nc_sid=7206a8&_nc_ohc=dW-t7kVd4T4AX-Yh_Jp&_nc_ht=scontent-tpe1-1.xx&oh=00_AfDPpcAGXX7ropNFZzUPs1iOjEbrWi2u1VIwS-utY6xf1w&oe=64ECF617"
-
-msg_count = 0
-with chat_box:
-    for i in range(len(ss.current_messages)):
-        msg = ss.current_messages[i]
-        if msg["sender"] == "AI":
-            message(msg["text"], logo=ai_logo, key=f"{i}_ai") # , key=str(msg_count) + msg["text"])
-        else:
-            message(msg["text"], is_user=True, logo=user_logo, key=f"{i}_user") # , key=str(msg_count) + msg["text"]) # align to right
-        msg_count += 1
-
-
-
-chat_col.text_area("type here", key="chat_input")
-submit_btn = st.button("Submit", type="primary", key="submit_btn", on_click=add_new_message, args=("Bob", ss['chat_input']))
-
-
-# ===== chat room =====
-
-# ===== doc room =====
-
-doc_col.title("Document: ")
-
-if ss.current_chatroom.docs == []:
-    doc_col.markdown("### Empty")
-else:
-    with doc_col.expander("Doc", False):
-        for doc in ss.current_chatroom.docs:
-            st.write(doc)
-    
-
-# ===== doc room =====
-
-
-
-# write CSS to website
-st.markdown(
-"""
-
-<style>
-    .streamlit-expanderContent {
-        overflow: scroll;
-        height: 520px;
-    }
-</style>
-
-"""
-, unsafe_allow_html=True)
 
 def change_room(room):
     ss.current_chatroom = room
@@ -136,6 +67,9 @@ def change_room(room):
     ss["scrollbarDownVar"] += 1
 
 def create_new_chat():
+
+    # backup function 
+    # use this if there's no chatroom.create_new_chat()
 
     tmp = datetime.now()
 
@@ -157,11 +91,68 @@ def create_new_chat():
 
     room = chatroom(date_dict, chat_history_list, docs_list)
 
-    chatrooms.insert(0, room)
+    chatrooms.insert(0, room) # add new chatroom to the front
     
-    change_room(room)
+    change_room(room) # redirect to the new chatroom
 
 
+# create 2 columns: chat column and document column
+chat_col, doc_col = st.columns([0.6, 0.4])
+
+# ===== chat room =====
+# set chatroom date as title 
+chat_col.title( get_date(ss.current_chatroom.date) )
+
+
+chat_box = chat_col.expander("chat", True) # 2nd parameter should be True if you want the expander to be in "expanded" initially
+
+# the avatar logo
+ai_logo = "https://t3.ftcdn.net/jpg/03/22/38/32/360_F_322383277_xcXz1I9vOFtdk7plhsRQyjODj08iNSwB.jpg"
+user_logo = "https://scontent-tpe1-1.xx.fbcdn.net/v/t39.30808-1/347419759_987667648912432_848655211680491487_n.jpg?stp=dst-jpg_p320x320&_nc_cat=110&ccb=1-7&_nc_sid=7206a8&_nc_ohc=dW-t7kVd4T4AX-Yh_Jp&_nc_ht=scontent-tpe1-1.xx&oh=00_AfDPpcAGXX7ropNFZzUPs1iOjEbrWi2u1VIwS-utY6xf1w&oe=64ECF617" # our boss
+
+msg_count = 0
+with chat_box:
+    for i in range(len(ss.current_messages)):
+        msg = ss.current_messages[i]
+        if msg["sender"] == "AI":
+            message(msg["text"], logo=ai_logo, key=f"{i}_ai")
+        else:
+            message(msg["text"], is_user=True, logo=user_logo, key=f"{i}_user")
+        msg_count += 1 # create unique id for message() widget
+
+chat_col.text_area("type here", key="chat_input") # where user can type
+submit_btn = st.button("Submit", type="primary", key="submit_btn", on_click=add_new_message, args=("Bob", ss['chat_input'])) # submit button
+# ===== chat room =====
+
+# ===== doc room =====
+# The document viewer
+doc_col.title("Document: ")
+
+if ss.current_chatroom.docs == []:
+    doc_col.markdown("### Empty")
+else:
+    with doc_col.expander("Doc", False):
+        for doc in ss.current_chatroom.docs:
+            st.write(doc)
+# ===== doc room =====
+
+
+
+# write CSS to website
+st.markdown(
+"""
+
+<style>
+    .streamlit-expanderContent {
+        overflow: scroll;
+        height: 520px;
+    }
+</style>
+
+"""
+, unsafe_allow_html=True)
+
+# create widget on sidebar(left)
 create_new_chat_btn = st.sidebar.button("Create A New Chat", type="primary", on_click=create_new_chat)
 
 st.sidebar.write("History chats")
@@ -199,10 +190,8 @@ js = f"""
     // dd( {len(ss.current_messages)} );
 </script>
 """
-
+# make scrollbar scroll to the bottom when there's any change in the chats
 html(js)
-
-st.write(ss.current_messages)
 
 
 # # useful references:
