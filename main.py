@@ -8,6 +8,18 @@ chatrooms = chatData
 
 chatrooms_btns = []
 
+def scrollbarDown():
+    print("in scrollbar down")
+    time.sleep(1) # time sleep to wait for the chat box appearing
+    html(
+        """
+    <script language="javascript">
+    const e = window.parent.document.getElementsByClassName("streamlit-expanderContent");
+    e[0].scrollTop = e[0].scrollHeight; //  - e[0].clientHeight;
+    console.log("scrollbar");
+    </script>
+        """, width=0, height=0)
+
 def get_date(date):
     # date is dict
     date_number = [ str(x) if x >= 10 else "0"+str(x) for x in date.values() ]
@@ -17,7 +29,7 @@ def get_date(date):
 current_chatroom = chatrooms[0]
 
 
-# @st.cache_resource # (experimental_allow_widgets=True)
+# @st.cache_resource(experimental_allow_widgets=True)
 def generate_room(root, room):
     chat_col, doc_col = root.columns([0.6, 0.4])
 
@@ -86,6 +98,8 @@ def generate_room(root, room):
 
     # ===== doc room =====
 
+    scrollbarDown()
+
 st.set_page_config(
     page_title="LawChat.tw",
     # page_icon="",
@@ -111,6 +125,7 @@ st.markdown(
 , unsafe_allow_html=True)
 
 
+
 create_new_chat_btn = st.sidebar.button("Create A New Chat", type="primary")
 
 st.sidebar.write("History chats")
@@ -124,3 +139,5 @@ for room in chatrooms:
 generate_room(st, current_chatroom)
 
 print("chat input: " + st.session_state["chat_input"])
+
+

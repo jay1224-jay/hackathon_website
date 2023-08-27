@@ -103,6 +103,10 @@ chat2 = {
         {
             "sender": "Jay",
             "text": "Please explain",
+        },
+        {
+            "sender": "AI",
+            "text": "It is 2 for no reason.",
         }
     ],
     "docs": [
@@ -117,4 +121,4 @@ chat2 = {
             """
     ]
 } 
-chatData = [chat1, chat2]
+chatData = [chat2, chat1]
