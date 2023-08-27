@@ -5,7 +5,7 @@
 
 ## Demo App
 
-![Demo](https://law-thon-project-test.streamlit.app/)
+[Demo](https://law-thon-project-test.streamlit.app/)
 
 
 

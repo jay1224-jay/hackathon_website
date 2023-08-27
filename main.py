@@ -3,6 +3,7 @@ from streamlit import session_state as ss
 from chatroom import chatroom, chatData
 from streamlit_chat import message
 from streamlit.components.v1 import html # for embedding js
+from streamlit_javascript import st_javascript as st_js
 
 import time
 from datetime import datetime
@@ -30,9 +31,7 @@ def scrollbarDown():
     html(
         """
     <script language="javascript">
-    const e = window.parent.document.getElementsByClassName("streamlit-expanderContent");
-    e[0].scrollTop = e[0].scrollHeight; //  - e[0].clientHeight;
-    console.log("scrollbar");
+    scrollbarDown();
     </script>
         """, width=0, height=0)
 
@@ -62,6 +61,8 @@ def ai_model(prompt):
     # return answer
     if prompt == "":
         return "Bro, u serious??"
+    elif prompt == "存證信函是什麼？":
+        return "1.存證信函是指藉由郵局證明信件內容及發信日期、收信日期的信件 文書.\n2.存證信函僅能證明發信人在信中表達了一定的意思表示，而且收信者確 實收到了信件.\n3.存證信函並不能夠代表發信者確實擁有信中敘述的權利，也不能夠代表 收信者即負有信中所敘述或要求的義務。"
     return prompt[::-1]
 
 def get_ai_response(prompt):
@@ -100,7 +101,7 @@ with chat_box:
 
 
 chat_col.text_area("type here", key="chat_input")
-submit_btn = st.button("Submit", key="submit_btn", on_click=add_new_message, args=("Bob", ss['chat_input']))
+submit_btn = st.button("Submit", type="primary", key="submit_btn", on_click=add_new_message, args=("Bob", ss['chat_input']))
 
 
 # ===== chat room =====
@@ -109,9 +110,12 @@ submit_btn = st.button("Submit", key="submit_btn", on_click=add_new_message, arg
 
 doc_col.title("Document: ")
 
-with doc_col.expander("Doc"):
-    for doc in ss.current_chatroom.docs:
-        st.write(doc)
+if ss.current_chatroom.docs == []:
+    doc_col.markdown("### Empty")
+else:
+    with doc_col.expander("Doc", False):
+        for doc in ss.current_chatroom.docs:
+            st.write(doc)
     
 
 # ===== doc room =====
@@ -136,6 +140,16 @@ def change_room(room):
     ss.current_chatroom = room
     ss.current_messages = room.chat_history
 
+    st_js("""function scrollbarDown() {
+            const e = window.parent.document.getElementsByClassName("streamlit-expanderContent");
+            e[0].scrollTop = e[0].scrollHeight; //  - e[0].clientHeight;
+            console.log("scrollbar");
+           }
+           scrollbarDown();
+           """) 
+    st_js("console.log(\"in\");")
+    print("st js work successfully")
+
 def create_new_chat():
 
     tmp = datetime.now()
@@ -148,7 +162,11 @@ def create_new_chat():
     date_dict["minute"] = tmp.minute
     date_dict["second"] = tmp.second
     
+    # add greeting words
     chat_history_list = []
+    chat_history_list.append({})
+    chat_history_list[0]["sender"] = "AI"
+    chat_history_list[0]["text"] = "Welcome to LawChat.tw."
 
     docs_list = []
 
@@ -162,21 +180,33 @@ def create_new_chat():
 create_new_chat_btn = st.sidebar.button("Create A New Chat", type="primary", on_click=create_new_chat)
 
 st.sidebar.write("History chats")
+
+room_count = 0
 for room in chatrooms:
-    button_title = room.chat_history[0]["text"] + '\n' + str(room.date["year"])
+    if room.chat_history == []: # avoid empty chat history
+        room.chat_history.append({})
+        room.chat_history[0]["sender"] = "AI"
+        room.chat_history[0]["text"] = "Welcome to LawChat.tw."
+
+    # the title on the sidebar
     # set the first human chat as the title
+    button_title = room.chat_history[0]["text"] + '\n' + str(room.date["year"])
 
-    st.sidebar.button(button_title, on_click=change_room, args=(room,))
-
-
-# generate_room(st, ss.current_chatroom, ss.current_messages)
-
-# st.write(ss)
-# st.write(ss["current_chatroom"])
-# st.write(ss["current_chatroom"])
-# for msg in ss.current_messages:
-#     st.write(msg["sender"])
-#     st.write(msg["text"])
+    st.sidebar.button(button_title, on_click=change_room, args=(room,), key=f"{room_count}_{button_title}")
+    room_count += 1
 
 
-print(datetime.now())
+js = f"""
+<script>
+    function scroll(dummy_var_to_force_repeat_execution){{
+        var textAreas = window.parent.document.querySelectorAll('');
+        for (let index = 0; index < textAreas.length; index++) {{
+            textAreas[index].style.color = 'red'
+            textAreas[index].scrollTop = textAreas[index].scrollHeight;
+        }}
+    }}
+    scroll( {len(st.session_state.chat)} )
+</script>
+"""
+
+html(js)
