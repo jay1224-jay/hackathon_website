@@ -8,11 +8,18 @@ class chatroom:
         self.chat_history = chat_history
         self.docs = docs
 
-    def send_msg(text):
-        """
-        This function is for user, not AI.
-        """
-        pass
+    def send_msg(self, sender, text):
+        
+        chat_dict = {"sender": sender, "text": text}
+        self.chat_history.append(chat_dict)
+
+        return self
+
+    def add_doc(self, doc):
+
+        self.docs.append(doc)
+
+        return self
 
 
 chat1 = {
@@ -38,7 +45,7 @@ chat1 = {
         },
         {
             "sender": "AI",
-            "text": "我不確定，但我可以幫你查詢。",
+            "text": "我我不確定，但我可以幫你查詢。我不確定，但我可以幫你查詢。我不確定，但我可以幫你查詢。我不確定，但我可以幫你查詢。我不確定，但我可以幫你查詢。不確定，但我可以幫你查詢。",
         },
         {
             "sender": "Bob",
@@ -121,4 +128,8 @@ chat2 = {
             """
     ]
 } 
-chatData = [chat2, chat1]
+
+c1 = chatroom(chat1["date"], chat1["chat_history"], chat1["docs"])
+c2 = chatroom(chat2["date"], chat2["chat_history"], chat2["docs"])
+
+chatData = [c1, c2]
