@@ -3,7 +3,6 @@ from streamlit import session_state as ss
 from chatroom import chatroom, chatData
 from streamlit_chat import message
 from streamlit.components.v1 import html # for embedding js
-from streamlit_javascript import st_javascript as st_js
 
 import time
 from datetime import datetime
@@ -26,14 +25,8 @@ if "current_chatroom" not in ss:
 
 ss["current_messages"] = ss.current_chatroom.chat_history
 
-def scrollbarDown():
-    time.sleep(1) # time sleep to wait for the chat box appearing
-    html(
-        """
-    <script language="javascript">
-    scrollbarDown();
-    </script>
-        """, width=0, height=0)
+ss["scrollbarDownVar"] = 0  # tell the scrollbar when to scroll to the bottom
+
 
 def get_date(date):
     # date is dict
@@ -53,7 +46,7 @@ def add_new_message(sender, message):
     if sender not in ai_name:
         add_new_message("AI", get_ai_response(message))
 
-
+    ss["scrollbarDownVar"] += 1
     
 def ai_model(prompt):
     # where the LawBERT.tw model should be
@@ -140,15 +133,7 @@ def change_room(room):
     ss.current_chatroom = room
     ss.current_messages = room.chat_history
 
-    st_js("""function scrollbarDown() {
-            const e = window.parent.document.getElementsByClassName("streamlit-expanderContent");
-            e[0].scrollTop = e[0].scrollHeight; //  - e[0].clientHeight;
-            console.log("scrollbar");
-           }
-           scrollbarDown();
-           """) 
-    st_js("console.log(\"in\");")
-    print("st js work successfully")
+    ss["scrollbarDownVar"] += 1
 
 def create_new_chat():
 
@@ -198,15 +183,51 @@ for room in chatrooms:
 
 js = f"""
 <script>
-    function scroll(dummy_var_to_force_repeat_execution){{
-        var textAreas = window.parent.document.querySelectorAll('');
-        for (let index = 0; index < textAreas.length; index++) {{
-            textAreas[index].style.color = 'red'
-            textAreas[index].scrollTop = textAreas[index].scrollHeight;
-        }}
+
+    function sleep(ms) {{
+        console.log(\"sleep\");
+        return new Promise(resolve => setTimeout(resolve, ms));
     }}
-    scroll( {len(st.session_state.chat)} )
+    async function scroll(dummy_var_to_force_repeat_execution){{
+        await sleep(0.5 * 1000); // sleep 0.5 sec
+        var expander = window.parent.document.getElementsByClassName('streamlit-expanderContent');
+        expander[0].scrollTop = expander[0].scrollHeight;
+    }}
+
+
+    scroll( {ss.scrollbarDownVar} );
+    // dd( {len(ss.current_messages)} );
 </script>
 """
 
 html(js)
+
+st.write(ss.current_messages)
+
+
+# # useful references:
+# 
+# scrollbar automatically scrolls to the bottom:
+# https://discuss.streamlit.io/t/how-do-i-move-the-default-scroll-of-st-text-area-to-the-bottom/39320
+# 
+# no refresh after click the button?
+# https://discuss.streamlit.io/t/what-causes-a-streamlit-form-to-refresh-after-clicking-the-submit-button-and-how-can-i-fix-it/44393
+# 
+# modern chatbot UI in streamlit
+# https://github.com/AI-Yash/st-chat
+# 
+# streamlit documentation
+# https://docs.streamlit.io/
+# 
+# streamlit session state official doc
+# https://docs.streamlit.io/library/api-reference/session-state
+# 
+# add scrollbar using CSS in streamlit
+# https://discuss.streamlit.io/t/how-to-add-scroll-bar-in-st-expander/41579/3
+# 
+# embed Javascript in streamlit
+# https://discuss.streamlit.io/t/how-to-embed-javascript-into-streamlit/20152/3
+# 
+# custom avatar icon in streamlit_chat
+# https://github.com/AI-Yash/st-chat/pull/34
+
