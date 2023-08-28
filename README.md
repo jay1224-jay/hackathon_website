@@ -36,7 +36,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 ```
----
+
 ### 2. change ```chatroom``` title (using chatroom date as default)
 
 ```main.py```
@@ -44,7 +44,7 @@ st.set_page_config(
 ```python
 chat_col.title( get_date(ss.current_chatroom.date) ) # replace get_date() with the string you want
 ```
----
+
 ### 3. change avatar icon
 
 ```main.py```
@@ -64,7 +64,7 @@ if msg["sender"] == "AI":
 else:
     message(msg["text"], is_user=True, logo=user_logo, key=f"{i}_user")
 ```
----
+
 ### 4. change the appearance of button
 
 2 styles: "primary" and "secondary" 
@@ -73,7 +73,7 @@ example:
 ```python
 st.button("text", type="primary") # primary style button
 ```
----
+
 ### 5. change history chat button title on the sidebar
 
 use the first message and the year as default
@@ -83,7 +83,7 @@ use the first message and the year as default
 ```python
 button_title = room.chat_history[0]["text"] + '\n' + str(room.date["year"])
 ```
----
+
 ### 6. change page, primary, and secondary color
 
 ```.streamlit/config.toml```
@@ -95,13 +95,13 @@ backgroundColor          = "#e8e8e8"
 secondaryBackgroundColor = "#ffffff"
 textColor                = "#262730"
 ```
----
+
 ### 7. change __about__ page text
 
 pages/about.py
  
 write everything you want in that file
----
+
 ### 8. add new page
 
 create new .py file in ```pages/```
