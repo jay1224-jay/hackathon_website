@@ -25,24 +25,38 @@ https://github.com/jay1224-jay/hackathon_website/commits/master
 
 ## Configuration 
 
-### 1. change the page title ("LawChat.tw")
+
+### 1. add your AI model
+
+return response based on user's prompt
 
 ```main.py```
 
 ```python
-st.set_page_config(
-    page_title="LawChat.tw",   # where you can change the title
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
+def ai_model(prompt):
+    # where the LawChat.tw model should be
+
+    # example:
+    # 
+    # response = my_model(prompt)
+    # return response
+    
+    response = prompt[::-1]
+
+    return response
 ```
 
-### 2. change ```chatroom``` title (using chatroom date as default)
+### 2. add chat data
 
-```main.py```
+You can modify the value, but just remember to keep the same name (```chatData```), which will be imported in ```main.py```
+
+```chat_data.py```
 
 ```python
-chat_col.title( get_date(ss.current_chatroom.date) ) # replace get_date() with the string you want
+c1 = chatroom(chat1["date"], chat1["chat_history"], chat1["docs"])
+c2 = chatroom(chat2["date"], chat2["chat_history"], chat2["docs"])
+
+chatData = [c2, c1]  # the complete chat data
 ```
 
 ### 3. change avatar icon
@@ -119,4 +133,22 @@ you want to create a new page called __contact__
 
 you will see the result on sidebar after creating the file
  
+### 9. change the page title ("LawChat.tw")
 
+```main.py```
+
+```python
+st.set_page_config(
+    page_title="LawChat.tw",   # where you can change the title
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+```
+
+### 10. change ```chatroom``` title (using chatroom date as default)
+
+```main.py```
+
+```python
+chat_col.title( get_date(ss.current_chatroom.date) ) # replace get_date() with the string you want
+```
