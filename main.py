@@ -12,9 +12,9 @@ st.set_page_config(
     # page_icon="",
     layout="wide",
     initial_sidebar_state="expanded",
-    menu_items={
-        'Report a bug': "https://www.extremelycoolapp.com/bug",
-    }
+    # menu_items={
+    #     'Report a bug': "com/bug",
+    # }
 )
 
 chatrooms = chatData  # where all chat data stores
@@ -165,7 +165,7 @@ for room in chatrooms:
         room.chat_history[0]["text"] = "Welcome to LawChat.tw."
 
     # the title on the sidebar
-    # set the first human chat as the title
+    # set the first chat as the title
     button_title = room.chat_history[0]["text"] + '\n' + str(room.date["year"])
 
     st.sidebar.button(button_title, on_click=change_room, args=(room,), key=f"{room_count}_{button_title}")
