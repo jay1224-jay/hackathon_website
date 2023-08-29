@@ -6,6 +6,7 @@ from streamlit.components.v1 import html # for embedding js
 from chat_data import chatroom, chatData # import the chat data, see chatroom.py for further information
 
 from datetime import datetime
+import re
 
 st.set_page_config(
     page_title="LawChat.tw",
@@ -95,6 +96,39 @@ def create_new_chat():
     
     change_room(room) # redirect to the new chatroom
 
+def get_doc_title(doc):
+
+    doc_title = ""
+    for title in doc.split('\n'):
+        if title != "":
+            doc_title = title
+            break
+    return doc_title.replace("#", "").replace(" ", "")
+
+def divide_doc(doc):
+    # return 1 if doc is 判決書, else return 0 if doc is 法條
+
+
+    judge_book_keyword = ["裁定", "判決", "法院"]
+
+    doc_title = get_doc_title(doc)
+
+    flag = 0
+    for k in judge_book_keyword:
+        if k in doc_title:
+            flag = 1
+            break
+    return flag
+
+
+doc_law = []
+doc_judge_page = []
+
+def refresh_doc_list(dummy_var_force):
+    doc_law = []
+    doc_judge_page = []
+
+refresh_doc_list(ss["scrollbarDownVar"])
 
 # create 2 columns: chat column and document column
 chat_col, doc_col = st.columns([0.6, 0.4])
@@ -121,19 +155,36 @@ with chat_box:
         msg_count += 1 # create unique id for message() widget
 
 chat_col.text_area("type here", key="chat_input") # where user can type
-submit_btn = st.button("Submit", type="primary", key="submit_btn", on_click=add_new_message, args=("Bob", ss['chat_input'])) # submit button
+submit_btn = chat_col.button("Submit", type="primary", key="submit_btn", on_click=add_new_message, args=("Bob", ss['chat_input'])) # submit button
 # ===== chat room =====
 
 # ===== doc room =====
 # The document viewer
+
+
 doc_col.title("Document: ")
 
 if ss.current_chatroom.docs == []:
     doc_col.markdown("### Empty")
 else:
-    with doc_col.expander("Doc", False):
-        for doc in ss.current_chatroom.docs:
+    # with doc_col.expander("Doc", True):
+    for doc in ss.current_chatroom.docs:
+        if divide_doc(doc) == 1:
+            doc_judge_page.append(doc)
+        else:
+            doc_law.append(doc)
+
+    doc_col.markdown("### 法律條文")
+    for doc in doc_law:
+        with doc_col.expander(get_doc_title(doc)):
             st.write(doc)
+
+    doc_col.markdown("### 判決書")
+    for doc in doc_judge_page:
+        with doc_col.expander(get_doc_title(doc)):
+            st.write(doc)
+
+
 # ===== doc room =====
 
 
@@ -146,6 +197,9 @@ st.markdown(
     .streamlit-expanderContent {
         overflow: scroll;
         height: 520px;
+    }
+    div[data-testid=\"stMarkdownContainer\"] {
+        font-size: 20px;
     }
 </style>
 
@@ -187,7 +241,6 @@ js = f"""
 
 
     scroll( {ss.scrollbarDownVar} );
-    // dd( {len(ss.current_messages)} );
 </script>
 """
 # make scrollbar scroll to the bottom when there's any change in the chats
