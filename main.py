@@ -128,7 +128,7 @@ def refresh_doc_list(dummy_var_force):
     doc_law = []
     doc_judge_page = []
 
-refresh_doc_list(ss["scrollbarDownVar"])
+refresh_doc_list(ss["current_messages"])
 
 # create 2 columns: chat column and document column
 chat_col, doc_col = st.columns([0.6, 0.4])
@@ -234,17 +234,20 @@ js = f"""
         return new Promise(resolve => setTimeout(resolve, ms));
     }}
     async function scroll(dummy_var_to_force_repeat_execution){{
+        // console.log("scroll");
         await sleep(0.5 * 1000); // sleep 0.5 sec
-        var expander = window.parent.document.getElementsByClassName('streamlit-expanderContent');
+        var expander = window.parent.document.getElementsByClassName("streamlit-expanderContent");
         expander[0].scrollTop = expander[0].scrollHeight;
     }}
 
 
-    scroll( {ss.scrollbarDownVar} );
+    scroll( {len(ss.current_messages)} );
 </script>
 """
 # make scrollbar scroll to the bottom when there's any change in the chats
 html(js)
+
+st.write(ss.scrollbarDownVar)
 
 
 # # useful references:
