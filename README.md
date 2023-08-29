@@ -4,7 +4,8 @@ Screenshot
 ![](https://github.com/jay1224-jay/hackathon_website/blob/master/pictures/demo-ui.png)
 
 Video
-https://github-production-user-asset-6210df.s3.amazonaws.com/53821314/263531694-249cdd41-e38a-40ea-b933-ff64928531b9.mp4
+
+https://github.com/jay1224-jay/hackathon_website/assets/53821314/d03c7cfe-29b2-4041-a575-233cc703f941
 
 ## Demo App
 
